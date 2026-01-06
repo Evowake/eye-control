@@ -1,7 +1,0 @@
-[Desktop Entry]
-Name=Eye Control
-Comment=Blue Light Filter Control
-Exec=python3 /home/a/eye-control.py
-Icon=weather-clear-night
-Type=Application
-Terminal=false
