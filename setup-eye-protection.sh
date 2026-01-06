@@ -1,3 +1,4 @@
+cat << 'MAIN_EOF' > setup-eye-protection.sh
 #!/bin/bash
 
 # 1. Path Definitions
@@ -76,3 +77,4 @@ gio set "$DESKTOP_FILE" metadata::trusted true
 
 echo "✅ [SUCCESS]: Protocol Deployed."
 python3 "$TARGET_SCRIPT" &
+MAIN_EOF
