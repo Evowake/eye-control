@@ -1,10 +1,10 @@
 #!/bin/bash
 
-# 1. Path Definitions (ET)
+# 1. Path Definitions
 TARGET_SCRIPT="$HOME/eye-control.py"
 DESKTOP_FILE="$HOME/Desktop/EyeControl.desktop"
 
-# 2. Generate the Python UI Engine (IC)
+# 2. Generate the Python UI Engine
 cat << 'PY_EOF' > "$TARGET_SCRIPT"
 import gi
 gi.require_version('Gtk', '3.0')
@@ -22,7 +22,6 @@ class EyeControl(Gtk.Window):
         vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=15)
         self.add(vbox)
 
-        # --- NIGHT LIGHT TOGGLE ---
         hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=10)
         lbl = Gtk.Label(label="Eye Protection", xalign=0)
         self.switch = Gtk.Switch()
@@ -35,7 +34,6 @@ class EyeControl(Gtk.Window):
         hbox.pack_end(self.switch, False, False, 0)
         vbox.pack_start(hbox, False, False, 0)
 
-        # --- TEMPERATURE SLIDER ---
         vbox.pack_start(Gtk.Label(label="Warmth (1000K = Max)", xalign=0), False, False, 0)
         cur_t = int(os.popen("gsettings get org.gnome.settings-daemon.plugins.color night-light-temperature | awk '{print $2}'").read().strip() or 4000)
         
@@ -61,7 +59,7 @@ win.connect("destroy", Gtk.main_quit)
 Gtk.main()
 PY_EOF
 
-# 3. Create Launcher (AJ)
+# 3. Create Launcher
 cat << L_EOF > "$DESKTOP_FILE"
 [Desktop Entry]
 Name=Eye Control
@@ -77,5 +75,4 @@ chmod +x "$DESKTOP_FILE"
 gio set "$DESKTOP_FILE" metadata::trusted true
 
 echo "✅ [SUCCESS]: Protocol Deployed."
-# Launch the HUD immediately so the user sees it works (ET)
 python3 "$TARGET_SCRIPT" &
