@@ -27,7 +27,6 @@ class EyeControl(Gtk.Window):
         lbl = Gtk.Label(label="Eye Protection", xalign=0)
         self.switch = Gtk.Switch()
         
-        # Sync switch with current system state
         current_state = os.popen("gsettings get org.gnome.settings-daemon.plugins.color night-light-enabled").read().strip()
         self.switch.set_active(current_state == "true")
         self.switch.connect("notify::active", self.on_toggle)
@@ -38,8 +37,6 @@ class EyeControl(Gtk.Window):
 
         # --- TEMPERATURE SLIDER ---
         vbox.pack_start(Gtk.Label(label="Warmth (1000K = Max)", xalign=0), False, False, 0)
-        
-        # Get current Kelvin value
         cur_t = int(os.popen("gsettings get org.gnome.settings-daemon.plugins.color night-light-temperature | awk '{print $2}'").read().strip() or 4000)
         
         adj = Gtk.Adjustment(value=cur_t, lower=1000, upper=10000, step_increment=100)
@@ -57,7 +54,6 @@ class EyeControl(Gtk.Window):
     def on_slider_move(self, widget):
         val = int(widget.get_value())
         os.system(f"gsettings set org.gnome.settings-daemon.plugins.color night-light-temperature {val}")
-        # Force Wayland refresh
         os.system("gdbus call --session --dest org.gnome.SettingsDaemon.Color --object-path /org/gnome/SettingsDaemon/Color --method org.gnome.SettingsDaemon.Color.ScreenForceReload > /dev/null 2>&1")
 
 win = EyeControl()
@@ -69,18 +65,17 @@ PY_EOF
 cat << L_EOF > "$DESKTOP_FILE"
 [Desktop Entry]
 Name=Eye Control
-Comment=Blue Light Filter Control
 Exec=python3 $TARGET_SCRIPT
 Icon=weather-clear-night
 Type=Application
 Terminal=false
 L_EOF
 
-# 4. Final Permissions Setup
+# 4. Final Permissions & Execution
 chmod +x "$TARGET_SCRIPT"
 chmod +x "$DESKTOP_FILE"
 gio set "$DESKTOP_FILE" metadata::trusted true
 
-echo "✅ [SUCCESS]: Deployment Finished."
-echo "👉 1. Find 'Eye Control' on your desktop."
-echo "👉 2. Right-click -> 'Allow Launching'."
+echo "✅ [SUCCESS]: Protocol Deployed."
+# Launch the HUD immediately so the user sees it works (ET)
+python3 "$TARGET_SCRIPT" &
